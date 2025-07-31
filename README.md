@@ -1,2 +1,2 @@
-# vidro-compose
-Docker compose files for various services used on my homelab.
+# vidro
+Blueprints and configs for various services on my homelab.
