@@ -1,0 +1,21 @@
+services:
+  ocis:
+    container_name: ocis
+    image: owncloud/ocis:7.2
+    restart: always
+    ports:
+      - ${PORT}:9200
+    logging:
+      driver: local
+    environment:
+      - OCIS_INSECURE=true
+      - OCIS_URL=${OCIS_URL}
+      - OCIS_LOG_LEVEL=INFO
+      - IDM_ADMIN_PASSWORD=${IDM_ADMIN_PASSWORD}
+    volumes:
+      - ${CONFIG_DIR}:/etc/ocis
+      - ocis_data:/var/lib/ocis
+
+volumes:
+  ocis_data:
+    external: true
