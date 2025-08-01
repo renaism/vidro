@@ -8,6 +8,7 @@ services:
     logging:
       driver: local
     environment:
+      - PROXY_TLS=false
       - OCIS_INSECURE=true
       - OCIS_URL=${OCIS_URL}
       - OCIS_LOG_LEVEL=INFO
