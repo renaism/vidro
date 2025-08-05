@@ -11,7 +11,9 @@ services:
       - PROXY_TLS=false
       - OCIS_INSECURE=true
       - OCIS_URL=${OCIS_URL}
-      - OCIS_LOG_LEVEL=INFO
+      - OCIS_LOG_LEVEL=WARN
+      - OCIS_LOG_COLOR=true
+      - OCIS_LOG_PRETTY=true
       - IDM_ADMIN_PASSWORD=${IDM_ADMIN_PASSWORD}
     volumes:
       - ${CONFIG_DIR}:/etc/ocis
