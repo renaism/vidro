@@ -1,0 +1,16 @@
+services:
+  drawio:
+    container_name: drawio
+    image: jgraph/drawio
+    restart: unless-stopped
+    ports:
+      - ${PORT}:8080
+    logging:
+      driver: local
+    environment:
+      PUBLIC_DNS: domain
+      ORGANISATION_UNIT: unit
+      ORGANISATION: org
+      CITY: city
+      STATE: state
+      COUNTRY_CODE: country
