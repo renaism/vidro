@@ -18,6 +18,7 @@ services:
     volumes:
       - ${CONFIG_DIR}:/etc/ocis
       - ocis_data:/var/lib/ocis
+      - ${APPS_DIR}:/var/lib/ocis/web/assets/apps
 
 volumes:
   ocis_data:
