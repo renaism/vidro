@@ -1,0 +1,34 @@
+services:
+  docker:
+    container_name: jenkins-docker
+    image: docker:dind
+    privileged: true
+    restart: always
+    ports:
+      - 2375:2375
+    logging:
+      driver: local
+    environment:
+      - DOCKER_TLS_CERTDIR=
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+  jenkins:
+    container_name: jenkins
+    image: registry.vidro.renaism.com/jenkins/jenkins-blueocean:2.516.2-1
+    depends_on:
+      - docker
+    restart: always
+    ports:
+      - 8080:8080
+    logging:
+      driver: local
+    environment:
+      - DOCKER_HOST=tcp://docker:2375
+      - DOCKER_TLS_VERIFY=0
+    volumes:
+      - jenkins-data:/var/jenkins_home
+
+volumes:
+  jenkins-data:
+    external: true
