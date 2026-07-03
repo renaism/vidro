@@ -1,0 +1,11 @@
+services:
+  trilium:
+    container_name: trilium
+    image: triliumnext/trilium:v0.103.0
+    restart: unless-stopped
+    ports:
+      - "${PORT}:8080"
+    volumes:
+      - ${DATA_DIR}:/home/node/trilium-data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
