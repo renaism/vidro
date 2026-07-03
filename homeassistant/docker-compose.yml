@@ -3,7 +3,6 @@ services:
     container_name: homeassistant
     image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
-    user: "${USER}"
     ports:
       - "${PORT}:8123"
     logging:
