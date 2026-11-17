@@ -10,6 +10,11 @@ terraform {
 locals {
   default_hostname     = "ct-${var.vm_id}"
   default_ipv4_address = "${cidrhost("${var.initialization.ip_config.ipv4.gateway}/24", var.vm_id)}/24"
+
+  hostname     = coalesce(var.initialization.hostname, local.default_hostname)
+  ipv4_address = coalesce(var.initialization.ip_config.ipv4.address, local.default_ipv4_address)
+
+  ipv4_gateway = local.ipv4_address == "dhcp" ? null : var.initialization.ip_config.ipv4.gateway
 }
 
 resource "proxmox_virtual_environment_container" "this" {
@@ -47,12 +52,12 @@ resource "proxmox_virtual_environment_container" "this" {
   }
 
   initialization {
-    hostname = coalesce(var.initialization.hostname, local.default_hostname)
+    hostname = local.hostname
 
     ip_config {
       ipv4 {
-        address = coalesce(var.initialization.ip_config.ipv4.address, local.default_ipv4_address)
-        gateway = var.initialization.ip_config.ipv4.gateway
+        address = local.ipv4_address
+        gateway = local.ipv4_gateway
       }
     }
 
