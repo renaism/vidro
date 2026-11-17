@@ -85,8 +85,7 @@ variable "initialization" {
       servers = optional(list(string))
     }), {})
     user_account = optional(object({
-      keys     = optional(list(string))
-      password = optional(string)
+      keys = optional(list(string))
     }), {})
   })
   default = {}

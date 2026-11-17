@@ -4,10 +4,6 @@ terraform {
       source  = "bpg/proxmox"
       version = ">=0.120"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = ">=3.9"
-    }
   }
 }
 
@@ -66,18 +62,11 @@ resource "proxmox_virtual_environment_container" "this" {
     }
 
     user_account {
-      keys     = var.initialization.user_account.keys
-      password = coalesce(var.initialization.user_account.password, random_password.user_account.result)
+      keys = var.initialization.user_account.keys
     }
   }
 
   network_interface {
     name = "eth0"
   }
-}
-
-resource "random_password" "user_account" {
-  length           = 16
-  override_special = "_%@"
-  special          = true
 }
