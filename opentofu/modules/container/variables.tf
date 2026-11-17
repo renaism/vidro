@@ -56,7 +56,7 @@ variable "disk" {
   default = {}
 }
 
-variable "feautres" {
+variable "features" {
   type = object({
     nesting = optional(bool, true)
     keyctl  = optional(bool, true)

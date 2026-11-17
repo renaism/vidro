@@ -37,8 +37,8 @@ resource "proxmox_virtual_environment_container" "this" {
   }
 
   features {
-    nesting = var.feautres.nesting
-    keyctl  = var.feautres.keyctl
+    nesting = var.features.nesting
+    keyctl  = var.features.keyctl
   }
 
   operating_system {
