@@ -5,7 +5,7 @@ variable "node_name" {
 
 variable "description" {
   type    = string
-  default = "Managed by Terraform"
+  default = "Managed by OpenTofu"
 }
 
 variable "vm_id" {
