@@ -1,0 +1,8 @@
+---
+- name: Update apt cache and upgrade initial packages
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    cache_valid_time: 3600
+  notify: reboot if required
+  tags: packages

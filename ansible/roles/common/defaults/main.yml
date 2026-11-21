@@ -1,0 +1,3 @@
+---
+common_timezone: "{{ timezone | default('Etc/UTC') }}"
+common_locale: "{{ locale | default('en_US.UTF-8') }}"

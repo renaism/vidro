@@ -1,0 +1,5 @@
+# Default ansible config for reference, generated with "ansible-config init"
+ansible.defaults.cfg
+
+# Secret variables
+secrets.yml

@@ -1,0 +1,6 @@
+---
+debian_base_packages: "{{ base_packages | default([]) }}"
+
+debian_base_admin_user_name: "{{ admin_user_name | default('') }}"
+debian_base_admin_user_password: "{{ admin_user_password | default('') }}"
+debian_base_admin_user_ssh_keys: "{{ admin_user_ssh_keys | default([]) }}"

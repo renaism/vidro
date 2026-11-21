@@ -1,0 +1,10 @@
+---
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ common_timezone }}"
+  tags: timezone
+
+- name: Generate locale
+  community.general.locale_gen:
+    name: "{{ common_locale }}"
+  tags: locale
