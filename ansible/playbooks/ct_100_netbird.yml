@@ -1,0 +1,78 @@
+---
+- name: CT100 (netbird)
+  hosts: ct_100_netbird
+  become: true
+  vars_files:
+    - ../vars/secrets.yml
+  tasks:
+    - name: debian_base init
+      ansible.builtin.import_role:
+        name: debian_base
+        tasks_from: init.yml
+
+    - name: Install ca-certificates and gnupg
+      ansible.builtin.apt:
+        name: [ca-certificates, gnupg]
+      tags: packages
+
+    - name: Install NetBird
+      tags: [packages, netbird]
+      block:
+        - name: Download NetBird public key
+          ansible.builtin.get_url:
+            url: https://pkgs.netbird.io/debian/public.key
+            dest: /usr/share/keyrings/netbird.asc
+            mode: "0644"
+          when: not ansible_check_mode
+
+        - name: Dearmor NetBird GPG key
+          ansible.builtin.command:
+            cmd: gpg --dearmor --yes --output /usr/share/keyrings/netbird-archive-keyring.gpg /usr/share/keyrings/netbird.asc
+            creates: /usr/share/keyrings/netbird-archive-keyring.gpg
+
+        - name: Add NetBird APT repository
+          ansible.builtin.deb822_repository:
+            name: netbird
+            types: deb
+            uris: https://pkgs.netbird.io/debian
+            suites: stable
+            components: main
+            signed_by: /usr/share/keyrings/netbird-archive-keyring.gpg
+          register: netbird_repo
+
+        - name: Update APT cache
+          ansible.builtin.apt:
+            update_cache: true
+          when: netbird_repo.changed
+
+        - name: Install NetBird CLI
+          ansible.builtin.apt:
+            name: netbird
+          when: not ansible_check_mode
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+      tags: netbird
+
+    - name: Start NetBird
+      tags: netbird
+      block:
+        - name: Enable and start NetBird service
+          ansible.builtin.systemd_service:
+            name: netbird
+            enabled: true
+            state: started
+
+        - name: Check NetBird connection
+          ansible.builtin.command:
+            cmd: netbird status --check ready
+          register: netbird_ready_check
+          changed_when: false
+          failed_when: false
+
+        - name: Register peer with Netbird
+          ansible.builtin.command:
+            cmd: "netbird up --setup-key {{ netbird_setup_key }}"
+          no_log: true
+          when: netbird_ready_check.rc != 0
+      when: ansible_facts['services']['netbird.service']['status'] | default() != ''
