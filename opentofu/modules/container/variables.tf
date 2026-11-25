@@ -1,6 +1,5 @@
 variable "node_name" {
-  type    = string
-  default = "vidro"
+  type = string
 }
 
 variable "description" {
@@ -50,10 +49,9 @@ variable "memory" {
 
 variable "disk" {
   type = object({
-    datastore_id = optional(string, "pve")
+    datastore_id = string
     size         = optional(number, 2)
   })
-  default = {}
 }
 
 variable "features" {
