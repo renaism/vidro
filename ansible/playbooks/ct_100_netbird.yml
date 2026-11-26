@@ -2,8 +2,6 @@
 - name: CT100 (netbird)
   hosts: ct_100_netbird
   become: true
-  vars_files:
-    - ../vars/secrets.yml
   tasks:
     - name: debian_base init
       ansible.builtin.import_role:

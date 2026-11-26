@@ -1,0 +1,9 @@
+---
+timezone: Asia/Jakarta
+
+# Secret variable examples,
+# set the actual values in ./secrets.yml
+# admin_user_name: admin
+# admin_user_password: password
+# admin_user_ssh_keys:
+# - /home/user/.ssh/id_ed25519.pub
