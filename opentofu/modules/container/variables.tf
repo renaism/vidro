@@ -54,6 +54,14 @@ variable "disk" {
   })
 }
 
+variable "mount_points" {
+  type = list(object({
+    volume = string
+    path   = string
+  }))
+  default = []
+}
+
 variable "features" {
   type = object({
     nesting = optional(bool, true)

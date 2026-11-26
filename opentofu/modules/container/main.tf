@@ -43,6 +43,14 @@ resource "proxmox_virtual_environment_container" "this" {
     size         = var.disk.size
   }
 
+  dynamic "mount_point" {
+    for_each = var.mount_points
+    content {
+      volume = mount_point.value.volume
+      path   = mount_point.value.path
+    }
+  }
+
   features {
     nesting = var.features.nesting
     keyctl  = var.features.keyctl
