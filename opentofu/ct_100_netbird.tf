@@ -4,10 +4,6 @@ module "ct_100_netbird" {
   node_name   = "vidro"
   description = <<-EOT
     # netbird
-    OS: debian_13
-
-    Type: single-service
-
     Exit node for a NetBird network.
 
     ### Configs
@@ -16,7 +12,7 @@ module "ct_100_netbird" {
     Ansible: [ct_100_netbird.yml](https://git.vidro.renaism.com/renaism/vidro/src/branch/main/ansible/playbooks/ct_100_netbird.yml)
     EOT
   vm_id       = 100
-  tags        = ["debian", "single-service", "vpn"]
+  tags        = ["os.debian", "service.single", "type.network"]
 
   start_on_boot = true
 

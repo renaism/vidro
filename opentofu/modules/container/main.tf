@@ -23,7 +23,7 @@ resource "proxmox_virtual_environment_container" "this" {
   node_name   = var.node_name
   vm_id       = var.vm_id
   description = var.description
-  tags        = concat(["opentofu"], var.tags)
+  tags        = concat(["managed.opentofu"], var.tags)
 
   unprivileged  = var.unprivileged
   start_on_boot = var.start_on_boot
