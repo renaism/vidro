@@ -1,9 +1,8 @@
----
 - name: CT100 (netbird)
   hosts: ct_100_netbird
   become: true
   tasks:
-    - name: debian_base init
+    - name: Init debian_base
       ansible.builtin.import_role:
         name: debian_base
         tasks_from: init.yml
@@ -36,16 +35,11 @@
             suites: stable
             components: main
             signed_by: /usr/share/keyrings/netbird-archive-keyring.gpg
-          register: netbird_repo
-
-        - name: Update APT cache
-          ansible.builtin.apt:
-            update_cache: true
-          when: netbird_repo.changed
 
         - name: Install NetBird CLI
           ansible.builtin.apt:
             name: netbird
+            update_cache: true
           when: not ansible_check_mode
 
     - name: Populate service facts
@@ -54,6 +48,7 @@
 
     - name: Start NetBird
       tags: netbird
+      when: ansible_facts['services']['netbird.service']['status'] | default() != ''
       block:
         - name: Enable and start NetBird service
           ansible.builtin.systemd_service:
@@ -72,5 +67,5 @@
           ansible.builtin.command:
             cmd: "netbird up --setup-key {{ netbird_setup_key }}"
           no_log: true
+          changed_when: true
           when: netbird_ready_check.rc != 0
-      when: ansible_facts['services']['netbird.service']['status'] | default() != ''

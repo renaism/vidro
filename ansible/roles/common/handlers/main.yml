@@ -3,11 +3,11 @@
   ansible.builtin.stat:
     path: /var/run/reboot-required
     get_checksum: false
-  register: reboot_required_file
+  register: common_reboot_required_file
   listen: reboot if required
 
 - name: Reboot the system
   ansible.builtin.reboot:
     post_reboot_delay: 10
-  when: reboot_required_file.stat.exists
+  when: common_reboot_required_file.stat.exists
   listen: reboot if required

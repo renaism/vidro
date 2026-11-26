@@ -12,34 +12,33 @@
   when: debian_base_admin_user_name is defined and (debian_base_admin_user_name | trim | length > 0)
   tags: users
   block:
-  - name: Create default admin user
-    ansible.builtin.user:
-      name: "{{ debian_base_admin_user_name }}"
-      password: "{{ debian_base_admin_user_password | password_hash }}"
-      shell: /bin/bash
-      update_password: on_create
-    register: admin_user
-    no_log: true
+    - name: Create default admin user
+      ansible.builtin.user:
+        name: "{{ debian_base_admin_user_name }}"
+        password: "{{ debian_base_admin_user_password | password_hash }}"
+        shell: /bin/bash
+        update_password: on_create
+      no_log: true
 
-  - name: Check if sudo group exists
-    ansible.builtin.getent:
-      database: group
-      key: sudo
-      fail_key: false
+    - name: Check if sudo group exists
+      ansible.builtin.getent:
+        database: group
+        key: sudo
+        fail_key: false
 
-  - name: Add admin user to sudo group
-    ansible.builtin.user:
-      name: "{{ debian_base_admin_user_name }}"
-      groups: sudo
-      append: true
-    when: ansible_facts.getent_group.sudo is not none
+    - name: Add admin user to sudo group
+      ansible.builtin.user:
+        name: "{{ debian_base_admin_user_name }}"
+        groups: sudo
+        append: true
+      when: ansible_facts.getent_group.sudo is not none
 
-  - name: Add SSH authorized keys for admin user
-    ansible.posix.authorized_key:
-      user: "{{ debian_base_admin_user_name }}"
-      key: "{{ lookup('file', item) }}"
-    loop: "{{ debian_base_admin_user_ssh_keys }}"
-    when: not ansible_check_mode
+    - name: Add SSH authorized keys for admin user
+      ansible.posix.authorized_key:
+        user: "{{ debian_base_admin_user_name }}"
+        key: "{{ lookup('file', item) }}"
+      loop: "{{ debian_base_admin_user_ssh_keys }}"
+      when: not ansible_check_mode
 
 - name: Import common init.yml
   ansible.builtin.import_role:
