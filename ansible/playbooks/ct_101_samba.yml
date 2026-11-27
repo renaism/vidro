@@ -1,0 +1,102 @@
+- name: CT101 (samba)
+  hosts: ct_101_samba
+  become: true
+  vars:
+    shares:
+      - name: media
+        uid: 1001
+        user: media
+        gid: 1001
+        group: media
+  tasks:
+    - name: Init debian_base
+      ansible.builtin.import_role:
+        name: debian_base
+        tasks_from: init.yml
+
+    - name: Install samba
+      ansible.builtin.apt:
+        name: samba
+      tags: packages
+      register: samba_install
+
+    - name: Create user/group
+      tags: users
+      block:
+        - name: Create share group
+          ansible.builtin.group:
+            name: "{{ item.group }}"
+            gid: "{{ item.gid }}"
+          loop: "{{ shares }}"
+
+        - name: Create share user
+          ansible.builtin.user:
+            name: "{{ item.user }}"
+            uid: "{{ item.uid }}"
+            group: "{{ item.group }}"
+            create_home: false
+            shell: /usr/sbin/nologin
+          loop: "{{ shares }}"
+
+        - name: Add admin user to the share group
+          ansible.builtin.user:
+            name: "{{ admin_user_name }}"
+            groups: "{{ item.group }}"
+            append: true
+          loop: "{{ shares }}"
+
+    - name: Check share directory status
+      tags: asserts
+      block:
+        - name: Get the share directory status
+          ansible.builtin.stat:
+            path: "/mnt/{{ item.name }}"
+          register: mount_dir_check
+          loop: "{{ shares }}"
+
+        - name: Check if the share directory exists
+          ansible.builtin.assert:
+            that:
+              - item.stat.exists
+            quiet: true
+            fail_msg: "/mnt/{{ item.item.name }} does not exist. Check Proxmox bind mount configuration."
+          loop: "{{ mount_dir_check.results }}"
+          loop_control:
+            label: "{{ item.item }}"
+
+        - name: Check the share directory ownership
+          ansible.builtin.assert:
+            that:
+              - item.stat.uid == item.item.uid
+              - item.stat.gid == item.item.gid
+            quiet: true
+            fail_msg: >
+              /mnt/{{ item.item.name }} does not belongs to {{ item.item.user }}:{{ item.item.group }}.
+              Check the directoy ownership in the Proxmox host
+          loop: "{{ mount_dir_check.results }}"
+          loop_control:
+            label: "{{ item.item }}"
+
+    - name: Set samba password for admin user
+      ansible.builtin.shell:
+        cmd: "set -o pipefail && (echo '{{ admin_user_password }}'; echo '{{ admin_user_password }}') | smbpasswd -s -a {{ admin_user_name }}"
+      no_log: true
+      changed_when: true
+      tags: samba
+
+    - name: Copy smb.conf
+      ansible.builtin.copy:
+        src: ct_101_samba_smb.conf
+        dest: /etc/samba/smb.conf
+        owner: root
+        group: root
+        mode: "0644"
+      tags: samba
+
+    - name: Enable and (re)start the smbd service
+      ansible.builtin.systemd:
+        name: smbd
+        enabled: true
+        state: restarted
+      tags: samba
+      when: not ansible_check_mode
